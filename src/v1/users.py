@@ -2,6 +2,7 @@
 import uuid
 
 # own
+from connections import SqlManager, create_user
 from permissions import token_required, hash_password
 from data_types import User
 
@@ -11,17 +12,16 @@ from flask import Blueprint, make_response, request
 users_bp = Blueprint("users", __name__)
 
 
-@users_bp.route("/users", methods=["POST"], endpoint="create_user")
-@token_required
-def create_user(current_user):
-    print("[Warning] Need to check if user is admin, otherwise anyone can create a user, or maybe mail check?")
-
+@users_bp.route("/users", methods=["POST"], endpoint="post_create_user")
+def post_create_user():
     data = request.get_json()
 
-    hashed_password = hash_password(data["password"])
-    new_user = User(public_id=str(uuid.uuid4()), username=data["name"], password=hashed_password, type="user")
+    data["password"] = hash_password(data["password"])
+    data["public_id"] = str(uuid.uuid4())
+    new_user = User(**data)
 
-    print(new_user)
+    with SqlManager() as (cursor, mydb):
+        create_user(cursor, new_user)
 
     return make_response("User created", 201)
 

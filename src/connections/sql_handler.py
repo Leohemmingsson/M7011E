@@ -13,7 +13,7 @@ class SqlManager:
     # Usage example:
 
     with SQLManager() as (cursor, mydb):
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT * FROM User")
         result = cursor.fetchall()
         print(result)
 
@@ -37,7 +37,10 @@ class SqlManager:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
     with SqlManager() as (cursor, mydb):
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT * FROM User")
         result = cursor.fetchall()
         print(result)
