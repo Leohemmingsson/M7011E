@@ -15,6 +15,10 @@ authentication_pb = Blueprint("authentication", __name__)
 
 @authentication_pb.route("/login", endpoint="login")
 def login():
+    """
+    Path to login with basic auth, this returns a token that can be used to access the api.
+    Default TTL for a token is 30 minutes.
+    """
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})

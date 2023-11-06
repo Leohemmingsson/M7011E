@@ -12,8 +12,8 @@ users_bp = Blueprint("users", __name__)
 
 
 @users_bp.route("/users", methods=["POST"], endpoint="create_user")
-# @token_required
-def create_user():
+@token_required
+def create_user(current_user):
     print("[Warning] Need to check if user is admin, otherwise anyone can create a user, or maybe mail check?")
 
     data = request.get_json()
@@ -26,12 +26,15 @@ def create_user():
     return make_response("User created", 201)
 
 
-@users_bp.route("/users", methods=["GET"], endpoint="users")
+@users_bp.route("/users", methods=["GET"], endpoint="get_all_users")
 @token_required
-def users(current_user):
+def get_all_users(current_user):
+    print("[Warning] Need to check if user is admin, otherwise anyone can create a user, or maybe mail check?")
     return "Users"
 
 
-@users_bp.route("/users/<int:id>", methods=["GET"], endpoint="get_from_id")
-def get_from_id():
+@users_bp.route("/users/<int:id>", methods=["GET"], endpoint="get_useruser__from_id")
+@token_required
+def get_user_from_id(current_user, id):
+    print("[Warning] Need to check if user is admin, otherwise anyone can create a user, or maybe mail check?")
     return f"One user: {id}"
