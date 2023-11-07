@@ -13,9 +13,9 @@ class User(db.Model):
     username = Column(String(255), unique=True, nullable=False)
     first_name = Column(String(255))
     last_name = Column(String(255))
-    password = Column(String(255))
+    password = Column(String(255), nullable=False)
     type = Column(Enum("customer", "admin", "superuser"))
-    mail = Column(String(255))
+    mail = Column(String(255), nullable=False)
     activated = Column(Boolean)
 
     # relationships

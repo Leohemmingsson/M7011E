@@ -21,7 +21,6 @@ app.config["MAIL_USE_SSL"] = True if os.getenv("MAIL_USE_TLS") == "True" else Fa
 app.config["MAIL_DEBUG"] = True
 mail = Mail(app)
 
-
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -32,6 +31,7 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+app.mail = mail
 app.db = db
 
 for pages in v1.__all__:

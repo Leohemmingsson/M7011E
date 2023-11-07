@@ -4,11 +4,10 @@ import uuid
 # own
 from permissions import token_required, hash_password
 from orm import User
-
+from connections import send_confirmation_mail
 
 # pip
 from flask import Blueprint, make_response, request, current_app, jsonify
-from sqlalchemy import delete
 
 users_bp = Blueprint("users", __name__)
 
@@ -20,13 +19,16 @@ def post_create_user():
 
     data["password"] = hash_password(data["password"])
     data["public_id"] = str(uuid.uuid4())
+    data["activated"] = 0
 
     new_user = User(**data)
 
     db.session.add(new_user)
     db.session.commit()
 
-    return make_response("User created", 201)
+    send_confirmation_mail(new_user)
+
+    return make_response("User created, not activated", 201)
 
 
 @users_bp.route("/users/confirm/<string:public_id>", methods=["GET"], endpoint="confirm_mail")
@@ -57,9 +59,13 @@ def get_user_from_id(current_user, id):
 
 
 @users_bp.route("/users/<string:username>", methods=["DELETE"], endpoint="remove_user_from_id")
-@token_required
-def remove_user_from_id(current_user, username):
+# @token_required
+# def remove_user_from_id(current_user, username):
+def remove_user_from_id(username):
     print("[Warning] Need to check if user is admin or if the request if from same person")
-    delete(User).where(User.username == username).execute()
+    db = current_app.db
+    user_to_delete = db.session.query(User).where(User.username == username).first()
+    db.session.delete(user_to_delete)
+    db.session.commit()
 
     return make_response("User deleted", 200)
