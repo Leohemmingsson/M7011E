@@ -6,8 +6,7 @@ import os
 from orm import User
 
 # pip
-from flask import request, jsonify
-from sqlalchemy import select
+from flask import request, jsonify, current_app
 import jwt
 
 
@@ -21,7 +20,9 @@ def token_required(func):
 
         try:
             data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-            current_user = select(User).where(User.public_id == data["public_id"]).first()
+            print(data)
+            db = current_app.db
+            current_user = db.session.query(User).where(User.public_id == data["public_id"]).first()
         except Exception as e:
             print(f"[Warning] specify exception as {type(e)} in jwt_token.py")
             return jsonify({"message": "Token is invalid"}, 401)

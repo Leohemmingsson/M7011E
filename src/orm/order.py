@@ -1,12 +1,12 @@
 # own
-from .base_class import BaseModel
+from shared_models import db
 
 # pip
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 
-class Order(BaseModel):
+class Order(db.Model):
     __tablename__ = "Order"
 
     id = Column(Integer, primary_key=True)

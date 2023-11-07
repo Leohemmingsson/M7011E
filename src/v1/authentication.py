@@ -19,12 +19,12 @@ def login():
     Path to login with basic auth, this returns a token that can be used to access the api.
     Default TTL for a token is 30 minutes.
     """
-    session = current_app.get("session")
+    db = current_app.db
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
-    user = session.query(User).where(User.username == auth.username).first()
+    user = db.session.query(User).where(User.username == auth.username).first()
 
     if not user:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})

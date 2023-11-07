@@ -1,12 +1,12 @@
 # own
-from .base_class import BaseModel
+from shared_models import db
 
 # pip
 from sqlalchemy import Column, String, Enum, Boolean
 from sqlalchemy.orm import relationship
 
 
-class User(BaseModel):
+class User(db.Model):
     __tablename__ = "User"
 
     public_id = Column(String(255), primary_key=True)

@@ -15,7 +15,7 @@ users_bp = Blueprint("users", __name__)
 
 @users_bp.route("/users", methods=["POST"], endpoint="post_create_user")
 def post_create_user():
-    session = current_app.get("session")
+    db = current_app.db
     data = request.get_json()
 
     data["password"] = hash_password(data["password"])
@@ -23,8 +23,8 @@ def post_create_user():
 
     new_user = User(**data)
 
-    session.add(new_user)
-    session.commit()
+    db.session.add(new_user)
+    db.session.commit()
 
     return make_response("User created", 201)
 
@@ -39,11 +39,12 @@ def confirm_mail(public_id):
 @users_bp.route("/users", methods=["GET"], endpoint="get_all_users")
 @token_required
 def get_all_users(current_user):
+    print(f"user = {current_user.username}")
     print("[Warning] Need to check if user is admin")
-    session = current_app.get("session")
-    users = session.query(User).all()
+    db = current_app.db
+    users = db.session.query(User).all()
 
-    users_data = [{"id": user.id, "username": user.username, "email": user.email} for user in users]
+    users_data = [{"id": user.public_id, "username": user.username, "email": user.mail} for user in users]
 
     return jsonify(users_data)
 
