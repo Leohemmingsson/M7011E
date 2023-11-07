@@ -3,11 +3,11 @@ import os
 import datetime
 
 # own
-from connections import SqlManager, sql_get_user_from_uname
 from permissions import check_password_hash
+from orm import User
 
 # pip
-from flask import Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify, current_app
 import jwt
 
 authentication_pb = Blueprint("authentication", __name__)
@@ -19,12 +19,12 @@ def login():
     Path to login with basic auth, this returns a token that can be used to access the api.
     Default TTL for a token is 30 minutes.
     """
+    session = current_app.get("session")
     auth = request.authorization
     if not auth or not auth.username or not auth.password:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
-    with SqlManager() as (cursor, mydb):
-        user = sql_get_user_from_uname(cursor, auth.username)
+    user = session.query(User).where(User.username == auth.username).first()
 
     if not user:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})

@@ -3,10 +3,11 @@ from functools import wraps
 import os
 
 # own
-from connections import SqlManager, sql_get_user_from_pid
+from orm import User
 
 # pip
 from flask import request, jsonify
+from sqlalchemy import select
 import jwt
 
 
@@ -20,8 +21,7 @@ def token_required(func):
 
         try:
             data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-            with SqlManager() as (cursor, mydb):
-                current_user = sql_get_user_from_pid(cursor, data["public_id"])
+            current_user = select(User).where(User.public_id == data["public_id"]).first()
         except Exception as e:
             print(f"[Warning] specify exception as {type(e)} in jwt_token.py")
             return jsonify({"message": "Token is invalid"}, 401)
