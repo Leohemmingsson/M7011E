@@ -21,3 +21,6 @@ Or if [code runner](https://marketplace.visualstudio.com/items?itemName=formulah
 This project uses flake8 (PEP8), with black formatter. Best way to integrate this is to install the extensions:
 * [black](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter)
 * [flake8](https://marketplace.visualstudio.com/items?itemName=ms-python.flake8)
+
+## Dont forget
+the .env file
