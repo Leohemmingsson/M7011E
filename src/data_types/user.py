@@ -7,6 +7,7 @@ class User:
         self.first_name: str | None = first_name
         self.last_name: str | None = last_name
         self.mail: str | None = mail
+        self.activated: bool = False
 
     @classmethod
     def from_list(cls, data: list) -> "User":
@@ -18,5 +19,6 @@ class User:
             "password": data[4],
             "type": data[5],
             "mail": data[6],
+            "activated": False,
         }
         return cls(**values)
