@@ -9,6 +9,15 @@ To install all dependencies: (in terminal)
 pip install -r requirements
 ```
 
+### Errors
+
+**Exception: Can not find valid pkg-config name.  Specify MYSQLCLIENT_CFLAGS and MYSQLCLIENT_LDFLAGS env vars manually**
+
+This can (in Ubuntu 22.04.3 LTS) be fixed by writing the following command:
+```bash
+sudo apt-get install libmysqlclient-dev
+```
+
 ## Run the project
 To run the project either write: (in terminal)
 ```bash

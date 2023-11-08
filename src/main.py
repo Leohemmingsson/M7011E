@@ -1,26 +1,19 @@
-from flask import Flask
-import os
-
-# from flask_sqlalchemy import SQLAlchemy
-from shared_models import db
-from dotenv import load_dotenv
-
-# from orm import db
+# own
 import v1
+from shared_models import db
+from utils import get_mysql_uri
+
+# pip
+from flask import Flask
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 
 load_dotenv()
 
-USERNAME = os.getenv("DB_USER")
-PASSWORD = os.getenv("DB_PASS")
-HOST = os.getenv("DB_HOST")
-PORT = os.getenv("DB_PORT")
-DATABASE = os.getenv("DB_DATABASE")
 
-
-app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
+app.config["SQLALCHEMY_DATABASE_URI"] = get_mysql_uri()
 
 
 db.init_app(app)
