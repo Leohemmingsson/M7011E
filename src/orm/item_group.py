@@ -1,12 +1,12 @@
 # own
-from shared_models import db
+from shared_models import BaseModel
 
 # pip
 from sqlalchemy import Column, Integer, SmallInteger, ForeignKey
 from sqlalchemy.orm import relationship
 
 
-class ItemGroup(db.Model):
+class ItemGroup(BaseModel):
     __tablename__ = "ItemGroup"
 
     id = Column(Integer, primary_key=True)

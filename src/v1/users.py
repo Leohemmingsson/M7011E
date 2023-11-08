@@ -15,16 +15,12 @@ users_bp = Blueprint("users", __name__)
 
 @users_bp.route("/users", methods=["POST"], endpoint="post_create_user")
 def post_create_user():
-    db = current_app.db
     data = request.get_json()
 
     data["password"] = hash_password(data["password"])
     data["public_id"] = str(uuid.uuid4())
 
-    new_user = User(**data)
-
-    db.session.add(new_user)
-    db.session.commit()
+    User.add(**data)
 
     return make_response("User created", 201)
 
