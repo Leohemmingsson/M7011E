@@ -13,3 +13,9 @@ class BaseModel(db.Model):
         db.session.add(instance)
         db.session.commit()
         return instance
+
+    @classmethod
+    def get(cls):
+        instance = db.session.query(cls).all()
+        db.session.commit()
+        return instance
