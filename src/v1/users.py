@@ -50,10 +50,7 @@ def confirm_mail(public_id):
 @users_bp.route("/users/<string:username>", methods=["GET"], endpoint="get_user_from_username")
 @token_required
 def get_user_from_username(current_user, username):
-    if not (
-        is_authorized(current_user, AuthorizationLevel.ADMIN, only_higher_than_user=True, exception_username=username)
-        or current_user.username == username
-    ):
+    if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
         return make_response("Unauthorized", 401)
 
     statement = User.username == username
@@ -68,10 +65,7 @@ def get_user_from_username(current_user, username):
 @users_bp.route("/users/<string:username>", methods=["DELETE"], endpoint="remove_user_from_username")
 @token_required
 def remove_user_from_username(current_user, username):
-    if not (
-        is_authorized(current_user, AuthorizationLevel.ADMIN, only_higher_than_user=True, exception_username=username)
-        or current_user.username == username
-    ):
+    if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
         return make_response("Unauthorized", 401)
 
     statement = User.username == username
@@ -80,17 +74,20 @@ def remove_user_from_username(current_user, username):
     return make_response("User deleted", 200)
 
 
-@users_bp.route("/users/<string:username>", methods=["PUT"], endpoint="update_user_permission")
+@users_bp.route("/users/<string:username>", methods=["PUT"], endpoint="update_user_fields")
 @token_required
-def update_user_field(current_user, username):
-    if not (
-        is_authorized(current_user, AuthorizationLevel.ADMIN, only_higher_than_user=True, exception_username=username)
-        or current_user.username == username
-    ):
+def update_user_fields(current_user, username):
+    if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
         return make_response("Unauthorized", 401)
 
     data = request.get_json()
     statement = User.username == username
     user = User.get_first_where(statement)
-    user.type = data["new_permission"]
-    return ""
+
+    if not user:
+        return make_response("User not found", 404)
+
+    for key, value in data.items():
+        user.update(key, value)
+
+    return make_response("User updated", 200)

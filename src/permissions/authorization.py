@@ -18,7 +18,7 @@ def is_authorized(
       * user: User object of the user trying to access the resource
       * required_permission: AuthorizationLevel enum value of the required permission
       * only_higher_than_user: If True, the user will be authorized if he has a higher
-        permission than the exception
+        permission than the exception. But the user will habe access.
       * only_user: If True, the user will be authorized if he is the exception
       * allow_user_exeption: If True, the user will be authorized if he is the exception
         This means that a user with lower permission than the required permission will be
