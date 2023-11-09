@@ -19,7 +19,9 @@ def post_create_user():
     data["password"] = hash_password(data["password"])
     data["public_id"] = str(uuid.uuid4())
     data["activated"] = True
-    data["type"] = AuthorizationLevel.ADMIN.value
+    data["type"] = AuthorizationLevel.CUSTOMER.name
+    # data["type"] = AuthorizationLevel.ADMIN.name
+    # data["type"] = AuthorizationLevel.SUPERUSER.name
 
     User.add(**data)
 
@@ -29,11 +31,10 @@ def post_create_user():
 @users_bp.route("/users", methods=["GET"], endpoint="get_all_users")
 @token_required
 def get_all_users(current_user):
-    print(f"user = {current_user.username}")
-    print("[Warning] Need to check if user is admin")
+    if not is_authorized(current_user, AuthorizationLevel.ADMIN):
+        return make_response("Unauthorized", 401)
 
     users = User.get_all()
-
     users_data = [one_user.to_dict for one_user in users]
 
     return jsonify(users_data)
@@ -46,10 +47,15 @@ def confirm_mail(public_id):
     return make_response("User activated", 200)
 
 
-@users_bp.route("/users/<string:username>", methods=["GET"], endpoint="get_user_from_id")
+@users_bp.route("/users/<string:username>", methods=["GET"], endpoint="get_user_from_username")
 @token_required
-def get_user_from_id(current_user, username):
-    print("[Warning] Need to check if user is admin or if the request if from same person")
+def get_user_from_username(current_user, username):
+    if not (
+        is_authorized(current_user, AuthorizationLevel.ADMIN, only_higher_than_user=True, exception_username=username)
+        or current_user.username == username
+    ):
+        return make_response("Unauthorized", 401)
+
     statement = User.username == username
     user = User.get_first_where(statement)
 
@@ -59,20 +65,32 @@ def get_user_from_id(current_user, username):
     return jsonify(user.to_dict)
 
 
-@users_bp.route("/users/<string:username>", methods=["DELETE"], endpoint="remove_user_from_id")
+@users_bp.route("/users/<string:username>", methods=["DELETE"], endpoint="remove_user_from_username")
 @token_required
-def remove_user_from_id(current_user, username):
-    print("[Warning] Need to check if user is admin or if the request if from same person")
+def remove_user_from_username(current_user, username):
+    if not (
+        is_authorized(current_user, AuthorizationLevel.ADMIN, only_higher_than_user=True, exception_username=username)
+        or current_user.username == username
+    ):
+        return make_response("Unauthorized", 401)
+
     statement = User.username == username
     User.delete_where(statement)
 
     return make_response("User deleted", 200)
 
 
-# @users_bp.route("/users/<string:username>", methods=["PUT"], endpoint="update_user_permission")
-# @token_required
-# def update_user_permission(current_id):
-#     data = request.get_json()
-#     statement = User.username == username
-#     user = User.get_first_where(statement)
-#     user.type = data["new_permission"]
+@users_bp.route("/users/<string:username>", methods=["PUT"], endpoint="update_user_permission")
+@token_required
+def update_user_field(current_user, username):
+    if not (
+        is_authorized(current_user, AuthorizationLevel.ADMIN, only_higher_than_user=True, exception_username=username)
+        or current_user.username == username
+    ):
+        return make_response("Unauthorized", 401)
+
+    data = request.get_json()
+    statement = User.username == username
+    user = User.get_first_where(statement)
+    user.type = data["new_permission"]
+    return ""

@@ -15,7 +15,7 @@ class User(BaseModel):
     last_name = Column(String(255))
     password = Column(String(255))
     address_id = Column(Integer, ForeignKey("Address.id"))
-    type = Column(Enum("customer", "admin", "superuser"))
+    type = Column(Enum("CUSTOMER", "ADMIN", "SUPERUSER"))
     mail = Column(String(255))
     activated = Column(Boolean)
 
