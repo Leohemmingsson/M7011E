@@ -37,6 +37,10 @@ class BaseModel(db.Model):
         values.pop("_sa_instance_state")
         return values
 
+    def update(self, key, value):
+        setattr(self, key, value)
+        db.session.commit()
+
     def __repr__(self):
         repr_value = ""
         for key, value in self.to_dict.items():
