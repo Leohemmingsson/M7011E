@@ -1,4 +1,4 @@
-from .base_model import db
+from .base_model import db, BaseModel
 
 
-__all__ = ["db"]
+__all__ = ["db", "BaseModel"]
