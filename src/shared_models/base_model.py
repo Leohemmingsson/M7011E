@@ -36,3 +36,10 @@ class BaseModel(db.Model):
         values = self.__dict__
         values.pop("_sa_instance_state")
         return values
+
+    def __repr__(self):
+        repr_value = ""
+        for key, value in self.to_dict.items():
+            repr_value += f"{key} = {value}, "
+
+        return repr_value

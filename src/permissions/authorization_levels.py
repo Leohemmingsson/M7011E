@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class AuthorizationLevel(Enum):
-    CUSTOMER = "customer"
-    ADMIN = "admin"
-    SUPERUSER = "superuser"
+    CUSTOMER = 0
+    ADMIN = 1
+    SUPERUSER = 2
