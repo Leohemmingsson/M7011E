@@ -1,6 +1,5 @@
 # std
 import uuid
-import os
 
 # own
 from permissions import token_required, hash_password, is_authorized, AuthorizationLevel
@@ -10,7 +9,6 @@ from orm import User
 
 # pip
 from flask import Blueprint, make_response, request, jsonify
-import yagmail
 
 users_bp = Blueprint("users", __name__)
 

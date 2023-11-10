@@ -3,7 +3,7 @@ from orm import Item
 from permissions import token_required, is_authorized, AuthorizationLevel
 
 # pip
-from flask import Blueprint, make_response, request, current_app, jsonify
+from flask import Blueprint, make_response, request, jsonify
 
 items_bp = Blueprint("items", __name__)
 
