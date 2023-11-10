@@ -13,5 +13,6 @@ def send_confirmation_email(user: User) -> None:
     yag.send(
         to=user.mail,
         subject="Confirm email",
-        contents=f"Hello {user.username}!\nPlease confirm your email by clicking on the link: http://localhost:5000/V1/users/confirm/{user.public_id}",
+        contents=f"Hello {user.username}!"
+        "\nPlease confirm your email by clicking on the link: http://localhost:5000/V1/users/confirm/{user.public_id}",
     )
