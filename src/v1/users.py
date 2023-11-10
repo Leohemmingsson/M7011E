@@ -1,5 +1,6 @@
 # std
 import uuid
+import os
 
 # own
 from permissions import token_required, hash_password, is_authorized, AuthorizationLevel
