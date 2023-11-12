@@ -30,7 +30,7 @@ def login():
 
     if not user:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
-    
+
     if not user.activated:
         return make_response("Email is not verified", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
@@ -44,7 +44,7 @@ def login():
         db.session.commit()
 
         send_verification_code(user, verification_code)
-        
+
         return make_response("Login verification code sent to your email.", 200)
 
     return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
