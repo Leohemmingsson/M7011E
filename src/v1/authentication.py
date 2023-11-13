@@ -58,14 +58,14 @@ def verify():
     Path to verify the login with the verification code.
     """
     db = current_app.db
-    auth = request.authorization
 
+    username = request.json.get("username")
     verification_code = request.json.get("code")
 
-    if not auth or not auth.username or not auth.password or not verification_code:
+    if not username or not verification_code:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
 
-    user = db.session.query(User).filter_by(username=auth.username).first()
+    user = db.session.query(User).filter_by(username=username).first()
 
     if not user or not user.verification_code:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
