@@ -20,6 +20,7 @@ class User(BaseModel):
     activated = Column(Boolean)
     verification_code = Column(String(255))
     verification_timestamp = Column(DateTime)
+    verification_attempts = Column(Integer)
 
     # relationships
     orders = relationship("Order", back_populates="customer")

@@ -37,9 +37,11 @@ def login():
     if check_password_hash(auth.password, user.password):
         verification_code = str(random.randint(100000, 999999))
         timestamp = datetime.datetime.utcnow()
+        attempts = 3
 
         user.verification_code = verification_code
         user.verification_timestamp = timestamp
+        user.verification_attempts = attempts
 
         db.session.commit()
 
@@ -68,19 +70,23 @@ def verify():
     if not user or not user.verification_code:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
 
-    if verification_code == user.verification_code:
-        expiration_time = user.verification_timestamp + datetime.timedelta(minutes=5)
-        if datetime.datetime.utcnow() <= expiration_time:
-            user.verification_code = None
-            user.verification_timestamp = None
+    if user.verfication_attempts > 0:
+        if verification_code == user.verification_code:
+            expiration_time = user.verification_timestamp + datetime.timedelta(minutes=5)
+            if datetime.datetime.utcnow() <= expiration_time:
+                user.verification_code = None
+                user.verification_timestamp = None
+                user.verfication_attempts = None
 
-            db.session.commit()
+                db.session.commit()
 
-            token = jwt.encode(
-                {"public_id": user.public_id, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                os.getenv("SECRET_KEY"),
-            )
+                token = jwt.encode(
+                    {"public_id": user.public_id, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+                    os.getenv("SECRET_KEY"),
+                )
 
-            return jsonify({"token": token})
+                return jsonify({"token": token})
+        user.verfication_attempts -= 1
+        db.session.commit()
 
     return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
