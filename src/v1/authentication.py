@@ -5,7 +5,7 @@ import random
 
 # own
 from permissions import check_password_hash
-from orm import User
+from orm import User, UserVerification
 from mail import send_verification_code
 
 # pip
@@ -34,14 +34,17 @@ def login():
     if not user.activated:
         return make_response("Email is not verified", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
+    verification_info = db.session.query(UserVerification).where(
+        UserVerification.user_public_id == user.public_id).first()
+
     if check_password_hash(auth.password, user.password):
         verification_code = str(random.randint(100000, 999999))
         timestamp = datetime.datetime.utcnow()
         attempts = 3
 
-        user.verification_code = verification_code
-        user.verification_timestamp = timestamp
-        user.verification_attempts = attempts
+        verification_info.code = verification_code
+        verification_info.timestamp = timestamp
+        verification_info.attempts = attempts
 
         db.session.commit()
 
@@ -67,25 +70,28 @@ def verify():
 
     user = db.session.query(User).filter_by(username=username).first()
 
-    if not user or not user.verification_code:
+    if not user:
+        return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
+    
+    verification_info = db.session.query(UserVerification).where(
+        UserVerification.user_public_id == user.public_id).first()
+
+    if verification_info.attempts < 1:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
 
-    if user.verification_attempts < 1:
-        return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
-
-    if verification_code != user.verification_code:
-        user.verification_attempts -= 1
+    if verification_code != verification_info.code:
+        verification_info.attempts -= 1
         db.session.commit()
 
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
 
-    expiration_time = user.verification_timestamp + datetime.timedelta(minutes=5)
+    expiration_time = verification_info.timestamp + datetime.timedelta(minutes=5)
     if datetime.datetime.utcnow() > expiration_time:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
 
-    user.verification_code = None
-    user.verification_timestamp = None
-    user.verification_attempts = None
+    verification_info.code = None
+    verification_info.timestamp = None
+    verification_info.attempts = None
 
     db.session.commit()
 

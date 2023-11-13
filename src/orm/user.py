@@ -2,7 +2,7 @@
 from shared_models import BaseModel
 
 # pip
-from sqlalchemy import Column, String, Enum, Boolean, ForeignKey, Integer, DateTime
+from sqlalchemy import Column, String, Enum, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 
@@ -18,9 +18,9 @@ class User(BaseModel):
     type = Column(Enum("CUSTOMER", "ADMIN", "SUPERUSER"))
     mail = Column(String(255))
     activated = Column(Boolean)
-    verification_code = Column(String(255))
-    verification_timestamp = Column(DateTime)
-    verification_attempts = Column(Integer)
+
+    # New relationship to UserVerification
+    user_verification = relationship("UserVerification", uselist=False, back_populates="user")
 
     # relationships
     orders = relationship("Order", back_populates="customer")

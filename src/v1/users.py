@@ -4,11 +4,12 @@ import uuid
 # own
 from permissions import token_required, hash_password, is_authorized, AuthorizationLevel
 from mail import send_confirmation_email
-from orm import User
-
+from orm import User, UserVerification
+from shared_models import db
 
 # pip
 from flask import Blueprint, make_response, request, jsonify
+
 
 users_bp = Blueprint("users", __name__)
 
@@ -28,6 +29,12 @@ def post_create_user():
         return make_response("Mail is missing", 400)
 
     new_user = User.add(**data)
+    verification_info = UserVerification()
+
+    new_user.user_verification = verification_info
+
+    db.session.add(verification_info)
+    db.session.commit()
 
     send_confirmation_email(new_user)
 
