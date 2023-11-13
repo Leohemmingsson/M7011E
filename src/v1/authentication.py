@@ -70,13 +70,13 @@ def verify():
     if not user or not user.verification_code:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
 
-    if user.verfication_attempts > 0:
+    if user.verification_attempts > 0:
         if verification_code == user.verification_code:
             expiration_time = user.verification_timestamp + datetime.timedelta(minutes=5)
             if datetime.datetime.utcnow() <= expiration_time:
                 user.verification_code = None
                 user.verification_timestamp = None
-                user.verfication_attempts = None
+                user.verification_attempts = None
 
                 db.session.commit()
 
@@ -86,7 +86,7 @@ def verify():
                 )
 
                 return jsonify({"token": token})
-        user.verfication_attempts -= 1
+        user.verification_attempts -= 1
         db.session.commit()
 
     return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
