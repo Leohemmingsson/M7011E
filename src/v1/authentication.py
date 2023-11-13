@@ -72,7 +72,7 @@ def verify():
 
     if not user:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Verification required!"'})
-    
+
     verification_info = db.session.query(UserVerification).where(
         UserVerification.user_public_id == user.public_id).first()
 
