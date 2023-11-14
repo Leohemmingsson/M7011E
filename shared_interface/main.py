@@ -12,19 +12,3 @@ for pages in v1.__all__:
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
-
-
-# @app.route("/user")
-# def user():
-#     worker.send_task("user.create_user", kwargs={"name": "Bob"})
-#     return "<p>Hello, World!</p>"
-
-
-# @app.route("/item")
-# def item():
-#     worker.send_task("item.create_item", kwargs={"name": "Bowl"})
-#     return "<p>Hello, World!</p>"
-
-
-# if __name__ == "__main__":
-#     app.run(host="0.0.0.0", debug=True)

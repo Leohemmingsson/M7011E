@@ -5,7 +5,7 @@ import uuid
 from permissions import token_required, hash_password, is_authorized, AuthorizationLevel
 from task_worker.worker_creater import worker
 
-# from mail import send_confirmation_email
+from mail import send_confirmation_email
 
 
 # pip
@@ -23,30 +23,28 @@ def post_create_user():
     data["activated"] = False
     data["type"] = AuthorizationLevel.CUSTOMER.name
 
-    # if "mail" not in data:
-    #     return make_response("Mail is missing", 400)
+    if "mail" not in data:
+        return make_response("Mail is missing", 400)
 
     req = worker.send_task("user.create_user", kwargs={"data": data})
 
     new_user: dict = req.get()
 
-    # new_user = User.add(**data)
-
-    # send_confirmation_email(new_user)
+    send_confirmation_email(new_user)
 
     return make_response(f"User created: {new_user['public_id']}", 201)
 
 
 @users_bp.route("/users", methods=["GET"], endpoint="get_all_users")
-@token_required
-def get_all_users(current_user):
-    if not is_authorized(current_user, AuthorizationLevel.ADMIN):
-        return make_response("Unauthorized", 401)
+# @token_required
+def get_all_users():
+    # if not is_authorized(current_user, AuthorizationLevel.ADMIN):
+    #     return make_response("Unauthorized", 401)
 
-    users = User.get_all()
-    users_data = [one_user.to_dict for one_user in users]
+    req = worker.send_task("user.get_all_users")
+    all_users: list = req.get()
 
-    return jsonify(users_data)
+    return jsonify(all_users)
 
 
 @users_bp.route("/users/confirm/<string:public_id>", methods=["GET"], endpoint="confirm_mail")

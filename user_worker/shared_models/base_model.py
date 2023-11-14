@@ -1,6 +1,3 @@
-# std
-import os
-
 # pip
 from sqlalchemy import delete, create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base

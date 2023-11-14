@@ -3,6 +3,8 @@ import time
 
 # own
 from orm import User
+from shared_models import BaseModel
+from shared_models.base_model import engine
 
 # pip
 from celery import Celery
@@ -16,10 +18,24 @@ app = Celery(
     backend="db+mysql://root:root@host.docker.internal:33066/celery",
 )
 
+BaseModel.metadata.create_all(engine)
+
 
 @app.task(name="user.create_user")
 def create_user(data: dict):
-    logger.info("Got Request - Starting work ")
     new_user = User.add(**data)
-    logger.info("Work Finished ")
     return new_user.to_dict
+
+
+@app.task(name="user.get_all_users")
+def get_all_users() -> list:
+    users = User.get_all()
+    all_users = [one_user.to_dict for one_user in users]
+    return all_users
+
+
+@app.task(name="user.delete_user")
+def delete_user(username: str):
+    statement = User.username == username
+    User.delete_where(statement)
+    return f"User deleted: {username}"

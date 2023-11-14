@@ -19,10 +19,10 @@ def post_create_item():
 
 
 @items_bp.route("/items", methods=["GET"], endpoint="get_all_items")
-@token_required
+# @token_required
 def get_all_items():
-    items = Item.get_all()
-    items = [one_item.to_dict for one_item in items]
+    req = worker.send_task("item.get_all_items")
+    items: list = req.get()
     return jsonify(items)
 
 
