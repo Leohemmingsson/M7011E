@@ -1,5 +1,5 @@
 # own
-from shared_models import BaseModel
+from shared_models import BaseModel, db
 
 # pip
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum
@@ -16,3 +16,13 @@ class Order(BaseModel):
     # relationships
     customer = relationship("User", back_populates="orders")
     itemgroups = relationship("ItemGroup", back_populates="order")
+
+    @classmethod
+    def add(cls, user, *args, **kwargs):
+        order = cls(*args, **kwargs)
+
+        user.orders.append(order)
+
+        db.session.add(order)
+        db.session.commit()
+        return order
