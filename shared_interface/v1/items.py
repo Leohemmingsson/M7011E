@@ -1,6 +1,6 @@
 # own
-from orm import Item
 from permissions import token_required, is_authorized, AuthorizationLevel
+from task_worker.worker_creater import worker
 
 # pip
 from flask import Blueprint, make_response, request, jsonify
@@ -9,10 +9,12 @@ items_bp = Blueprint("items", __name__)
 
 
 @items_bp.route("/items", methods=["POST"], endpoint="post_create_item")
-@token_required
+# @token_required
 def post_create_item():
-    data = request.get_json()
-    Item.add(**data)
+    # data = request.get_json()
+    # Item.add(**data)
+
+    worker.send_task("item.create_item", kwargs={"name": "Bowl"})
     return make_response("Item created", 201)
 
 

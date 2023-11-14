@@ -3,8 +3,9 @@ import uuid
 
 # own
 from permissions import token_required, hash_password, is_authorized, AuthorizationLevel
-from mail import send_confirmation_email
-from orm import User
+from task_worker.worker_creater import worker
+
+# from mail import send_confirmation_email
 
 
 # pip
@@ -21,17 +22,19 @@ def post_create_user():
     data["public_id"] = str(uuid.uuid4())
     data["activated"] = False
     data["type"] = AuthorizationLevel.CUSTOMER.name
-    # data["type"] = AuthorizationLevel.ADMIN.name
-    # data["type"] = AuthorizationLevel.SUPERUSER.name
 
-    if "mail" not in data:
-        return make_response("Mail is missing", 400)
+    # if "mail" not in data:
+    #     return make_response("Mail is missing", 400)
 
-    new_user = User.add(**data)
+    req = worker.send_task("user.create_user", kwargs={"data": data})
 
-    send_confirmation_email(new_user)
+    new_user: dict = req.get()
 
-    return make_response("User created", 201)
+    # new_user = User.add(**data)
+
+    # send_confirmation_email(new_user)
+
+    return make_response(f"User created: {new_user['public_id']}", 201)
 
 
 @users_bp.route("/users", methods=["GET"], endpoint="get_all_users")

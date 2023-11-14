@@ -4,7 +4,6 @@ import datetime
 
 # own
 from permissions import check_password_hash
-from orm import User
 
 # pip
 from flask import Blueprint, request, make_response, jsonify, current_app

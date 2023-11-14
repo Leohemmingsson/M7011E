@@ -14,5 +14,5 @@ def send_confirmation_email(user: User) -> None:
         to=user.mail,
         subject="Confirm email",
         contents=f"Hello {user.username}!"
-        "\nPlease confirm your email by clicking on the link: http://localhost:5000/V1/users/confirm/{user.public_id}",
+        f"\nPlease confirm your email by clicking on the link: http://localhost:5000/V1/users/confirm/{user.public_id}",
     )

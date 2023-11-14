@@ -1,5 +1,28 @@
+# std
+from typing import Protocol
+
+# own
 from .authorization_levels import AuthorizationLevel
-from orm import User
+
+# from orm import User
+
+
+class User(Protocol):
+    @property
+    def activated(self) -> bool:
+        ...
+
+    @property
+    def username(self) -> str:
+        ...
+
+    @property
+    def public_id(self) -> str:
+        ...
+
+    @property
+    def type(self) -> AuthorizationLevel:
+        ...
 
 
 def is_authorized(

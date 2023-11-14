@@ -3,7 +3,7 @@ from functools import wraps
 import os
 
 # own
-from orm import User
+# from orm import User
 
 # pip
 from flask import request, jsonify, current_app
