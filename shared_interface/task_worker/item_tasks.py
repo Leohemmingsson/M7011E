@@ -12,10 +12,20 @@ def get_all_items():
 
 
 @celery_obj.task(queue="item", name="get_item_by_id")
-def get_item_by_id(current_user, id):
+def get_item_by_id(id):
+    ...
+
+
+@celery_obj.task(queue="item", name="get_item_by_name")
+def get_item_by_name(name):
     ...
 
 
 @celery_obj.task(queue="item", name="delete_item_by_id")
-def delete_item_by_id(current_user, id):
+def delete_item_by_id(id):
+    ...
+
+
+@celery_obj.task(queue="item", name="delete_item_by_name")
+def delete_item_by_name(name):
     ...
