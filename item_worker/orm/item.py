@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 class Item(BaseModel):
     __tablename__ = "Item"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     in_stock = Column(SmallInteger)
     price = Column(Integer)

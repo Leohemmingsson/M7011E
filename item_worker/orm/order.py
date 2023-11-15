@@ -10,9 +10,8 @@ class Order(BaseModel):
     __tablename__ = "Order"
 
     id = Column(Integer, primary_key=True)
-    customer_id = Column(String(255), ForeignKey("User.public_id"))
+    customer_id = Column(String(255))
     status = Column(Enum("in_progess", "done"))
 
     # relationships
-    customer = relationship("User", back_populates="orders")
     itemgroups = relationship("ItemGroup", back_populates="order")
