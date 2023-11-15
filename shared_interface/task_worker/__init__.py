@@ -14,6 +14,13 @@ from .item_tasks import (
     get_item_by_name,
     delete_item_by_id,
     delete_item_by_name,
+    create_order,
+    mark_order_done,
+    add_item_to_order,
+    remove_item_from_order,
+    get_all_orders,
+    get_order_by_id,
+    delete_order_by_id,
 )
 
 
@@ -30,4 +37,11 @@ __all__ = [
     "get_item_by_name",
     "delete_item_by_id",
     "delete_item_by_name",
+    "create_order",
+    "mark_order_done",
+    "add_item_to_order",
+    "remove_item_from_order",
+    "get_all_orders",
+    "get_order_by_id",
+    "delete_order_by_id",
 ]
