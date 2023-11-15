@@ -1,6 +1,5 @@
 # std
 from functools import wraps
-import os
 
 # own
 from task_worker import get_user_by_public_id
@@ -8,6 +7,8 @@ from task_worker import get_user_by_public_id
 # pip
 from flask import request, jsonify, make_response
 import jwt
+
+SECRET_KEY = "thisissecretkey"
 
 
 def token_required(func):
@@ -19,7 +20,7 @@ def token_required(func):
         token = request.headers["x-access-token"]
 
         try:
-            data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             req = get_user_by_public_id.delay(data["public_id"])
             response, status_code = req.get()
             if status_code != 200:
@@ -27,7 +28,7 @@ def token_required(func):
             current_user = response
         except Exception as e:
             print(f"[Warning] specify exception as {type(e)} in jwt_token.py")
-            return make_response("Token is invalid", 401)
+            return make_response(f"Token is invalid {e}", 401)
 
         return func(current_user, *args, **kwargs)
 

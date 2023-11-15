@@ -31,6 +31,9 @@ def login():
     if status_code != 200:
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
+    if user["activated"] is not True:
+        return make_response("User not activated", 401)
+
     if check_password_hash(auth.password, user["password"]):
         token = jwt.encode(
             {"public_id": user["public_id"], "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
