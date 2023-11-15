@@ -25,8 +25,7 @@ logging.basicConfig(level=logging.INFO)
 def post_create_user():
     data = request.get_json()
     data["password"] = hash_password(data["password"])
-    # data["type"] = AuthorizationLevel.CUSTOMER.name
-    data["type"] = AuthorizationLevel.ADMIN.name
+    data["type"] = AuthorizationLevel.CUSTOMER.name
 
     if "mail" not in data:
         return make_response("Mail is missing", 400)
