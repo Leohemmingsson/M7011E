@@ -1,5 +1,5 @@
 # pip
-from sqlalchemy import delete, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 engine = create_engine("mysql://root:root@db:3306/main")
@@ -28,15 +28,20 @@ class BaseModel(Base):
         return instance
 
     @classmethod
-    def get_first_where(cls, statement):
-        instance = session.query(cls).filter(statement).first()
+    def get_first_where(cls, statement, staement2=None):
+        if staement2 is None:
+            instance = session.query(cls).filter(statement).first()
+        else:
+            instance = session.query(cls).filter(statement, staement2).first()
+
         return instance
 
     @classmethod
-    def delete_where(cls, statement):
-        delete_query = delete(cls).where(statement)
-        session.execute(delete_query)
-        session.commit()
+    def delete_where(cls, statement, statement2=None):
+        if statement2 is None:
+            session.query(cls).filter(statement).delete()
+        else:
+            session.query(cls).filter(statement, statement2).delete()
 
     @property
     def to_dict(self):
