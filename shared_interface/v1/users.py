@@ -11,14 +11,14 @@ from task_worker import (
     activate_user_by_public_id,
 )
 
-from mail import send_confirmation_email
+# from mail import send_confirmation_email
 
 
 # pip
 from flask import Blueprint, make_response, request, jsonify
 
 users_bp = Blueprint("users", __name__)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 @users_bp.route("/users", methods=["POST"], endpoint="post_create_user")
@@ -34,6 +34,8 @@ def post_create_user():
 
     response, status_code = req.get()
 
+    # if status_code == 201:
+    # new_user = response
     # send_confirmation_email(new_user)
 
     return make_response(f"User created: {response}", status_code)
@@ -60,10 +62,12 @@ def confirm_mail(public_id):
 
 
 @users_bp.route("/users/<string:username>", methods=["GET"], endpoint="get_user_from_username")
-# @token_required
-def get_user_from_username(username):
-    # if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
-    #     return make_response("Unauthorized", 401)
+@token_required
+def get_user_from_username(current_user, username):
+    if not (
+        is_authorized(current_user, only_higher_than_user=True, allow_user_exeption=True, exception_username=username)
+    ):
+        return make_response("Unauthorized", 401)
 
     req = get_user_by_username.delay(username)
     response, status_code = req.get()
@@ -89,14 +93,4 @@ def update_user_fields(current_user, username):
     if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
         return make_response("Unauthorized", 401)
 
-    data = request.get_json()
-    statement = User.username == username
-    user = User.get_first_where(statement)
-
-    if not user:
-        return make_response("User not found", 404)
-
-    for key, value in data.items():
-        user.update(key, value)
-
-    return make_response("User updated", 200)
+    raise NotImplementedError("Not implemented yet")

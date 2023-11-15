@@ -9,8 +9,8 @@ from sqlalchemy.orm import relationship
 class Item(BaseModel):
     __tablename__ = "Item"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), unique=True, nullable=False)
     in_stock = Column(SmallInteger)
     price = Column(Integer)
     img = Column(String(255))
