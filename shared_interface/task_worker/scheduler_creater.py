@@ -18,5 +18,7 @@ celery_obj.conf.task_routes = {
     "scheduler.create_item": {"queue": "item"},
     "scheduler.get_all_items": {"queue": "item"},
     "scheduler.get_item_by_id": {"queue": "item"},
+    "scheduler.get_item_by_name": {"queue": "item"},
     "scheduler.delete_item_by_id": {"queue": "item"},
+    "scheduler.delete_item_by_name": {"queue": "item"},
 }
