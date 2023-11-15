@@ -1,3 +1,3 @@
-from .base_model import BaseModel
+from .base_model import BaseModel, session
 
-__all__ = ["BaseModel"]
+__all__ = ["BaseModel", "session"]
