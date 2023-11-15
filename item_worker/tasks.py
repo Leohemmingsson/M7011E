@@ -1,11 +1,12 @@
 # own
-from shared_models import BaseModel
+from shared_models import BaseModel, session
 from shared_models.base_model import engine
 from orm import Item
 
 # pip
 from celery import Celery
 from celery.utils.log import get_task_logger
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 logger = get_task_logger(__name__)
 
@@ -28,7 +29,14 @@ BaseModel.metadata.create_all(engine)
 
 @app.task(queue="item", name="create_item")
 def create_user(data: dict):
-    new_item = Item.add(**data)
+    try:
+        new_item = Item.add(**data)
+    except IntegrityError:
+        session.rollback()
+        return ("Item already exists", 400)
+    except OperationalError as e:
+        session.rollback()
+        return (f"Error {e}", 400)
 
     return (f"Item: {new_item.name} created", 201)
 
