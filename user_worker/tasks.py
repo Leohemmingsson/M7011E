@@ -2,13 +2,14 @@
 import uuid
 
 # own
-from orm import User
-from shared_models import BaseModel
+from orm import User, UserVerification
+from shared_models import BaseModel, session
 from shared_models.base_model import engine
 
 # pip
 from celery import Celery
 from celery.utils.log import get_task_logger
+from sqlalchemy.exc import IntegrityError
 
 logger = get_task_logger(__name__)
 
@@ -25,6 +26,7 @@ app.conf.task_routes = {
     "scheduler.get_user_by_public_id": {"queue": "user"},
     "scheduler.activate_user_by_public_id": {"queue": "user"},
     "scheduler.delete_user_by_username": {"queue": "user"},
+    "scheduler.update_user_cloumns": {"queue": "user"},
 }
 
 BaseModel.metadata.create_all(engine)
@@ -32,13 +34,22 @@ BaseModel.metadata.create_all(engine)
 
 @app.task(queue="user", name="create_user")
 def create_user(data: dict) -> tuple:
-    data["public_id"] = str(uuid.uuid4())
-    data["activated"] = False
-    new_user = User.add(**data)
-    new_user.public_id  # The return is wrong if instance is not used
-    new_user = new_user.to_dict
+    try:
+        data = data
+        data["public_id"] = str(uuid.uuid4())
+        data["activated"] = False
 
-    return (new_user, 201)
+        verification_info = UserVerification()
+        new_user = User.add(verification_info, **data)
+
+        new_user.public_id  # The return is wrong if instance is not used
+        new_user = new_user.to_dict
+
+        return (new_user, 201)
+
+    except IntegrityError:
+        session.rollback()
+        return ("user already exists", 409)
 
 
 @app.task(queue="user", name="get_all_users")
@@ -85,3 +96,14 @@ def delete_user_by_username(username: str) -> tuple:
     statement = User.username == username
     User.delete_where(statement)
     return (f"User deleted: {username}", 200)
+
+
+@app.task(queue="user", name="update_user_cloumns")
+def update_user_cloumns(username: str, data) -> tuple:
+    statement = User.username == username
+    user = User.get_first_where(statement)
+
+    for key, value in data.items():
+        user.update(key, value)
+
+    return (f"User updated: {username}", 200)
