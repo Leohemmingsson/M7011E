@@ -34,7 +34,9 @@ def post_create_user():
 
     response, status_code = req.get()
 
-    # send_confirmation_email(new_user)
+    if status_code == 201:
+        new_user = response
+        # send_confirmation_email(new_user)
 
     return make_response(f"User created: {response}", status_code)
 
