@@ -37,7 +37,7 @@ BaseModel.metadata.create_all(engine)
 
 
 @app.task(queue="item", name="create_item")
-def create_user(data: dict):
+def create_item(data: dict):
     try:
         new_item = Item.add(**data)
     except IntegrityError:
