@@ -1,9 +1,10 @@
 # own
 from permissions import token_required, is_authorized, AuthorizationLevel
-from task_worker.scheduler_creater import celery_obj
+from task_worker import get_all_items, create_item, get_item_by_id
+
 
 # pip
-from flask import Blueprint, make_response, request, jsonify
+from flask import Blueprint, make_response
 
 items_bp = Blueprint("items", __name__)
 
@@ -14,28 +15,26 @@ def post_create_item():
     # data = request.get_json()
     # Item.add(**data)
 
-    celery_obj.send_task("item.create_item", kwargs={"name": "Bowl"})
-    return make_response("Item created", 201)
+    req = create_item.delay("test")
+    response, status_code = req.get()
+    return make_response(f"Item created: {response}", status_code)
 
 
-@items_bp.route("/items", methods=["GET"], endpoint="get_all_items")
+@items_bp.route("/items", methods=["GET"], endpoint="route_get_all_items")
 # @token_required
-def get_all_items():
-    req = celery_obj.send_task("item.get_all_items")
-    items: list = req.get()
-    return jsonify(items)
+def route_get_all_items():
+    req = get_all_items.delay()
+    resonse, status_code = req.get()
+    return make_response(resonse, status_code)
 
 
 @items_bp.route("/items/<int:id>", methods=["GET"], endpoint="get_items_from_id")
 @token_required
 def get_items_from_id(current_user, id):
-    statement = Item.id == id
-    item = Item.get_first_where(statement)
+    req = get_item_by_id.delay(id)
+    response, status_code = req.get()
 
-    if not item:
-        return make_response("Item not found", 404)
-
-    return jsonify(item.to_dict)
+    return make_response(response, status_code)
 
 
 @items_bp.route("/items/<int:id>", methods=["GET"], endpoint="update_item_fields")
@@ -44,14 +43,4 @@ def update_item_fields(current_user, id):
     if not (is_authorized(current_user, AuthorizationLevel.ADMIN)):
         return make_response("Unauthorized", 401)
 
-    data = request.get_json()
-    statement = Item.id == id
-    item = Item.get_first_where(statement)
-
-    if not item:
-        return make_response("Item not found", 404)
-
-    for key, value in data.items():
-        item.update(key, value)
-
-    return make_response("User updated", 200)
+    raise NotImplementedError("Not implemented yet")

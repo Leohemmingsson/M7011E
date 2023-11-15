@@ -11,7 +11,7 @@ from task_worker import (
     activate_user_by_public_id,
 )
 
-from mail import send_confirmation_email
+# from mail import send_confirmation_email
 
 
 # pip
@@ -34,9 +34,9 @@ def post_create_user():
 
     response, status_code = req.get()
 
-    if status_code == 201:
-        new_user = response
-        # send_confirmation_email(new_user)
+    # if status_code == 201:
+    # new_user = response
+    # send_confirmation_email(new_user)
 
     return make_response(f"User created: {response}", status_code)
 
@@ -93,14 +93,4 @@ def update_user_fields(current_user, username):
     if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
         return make_response("Unauthorized", 401)
 
-    data = request.get_json()
-    statement = User.username == username
-    user = User.get_first_where(statement)
-
-    if not user:
-        return make_response("User not found", 404)
-
-    for key, value in data.items():
-        user.update(key, value)
-
-    return make_response("User updated", 200)
+    raise NotImplementedError("Not implemented yet")
