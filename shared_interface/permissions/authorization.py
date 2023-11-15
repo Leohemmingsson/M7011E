@@ -1,5 +1,10 @@
 # own
 from .authorization_levels import AuthorizationLevel
+from task_worker import get_user_by_public_id, get_user_by_username
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 # from orm import User
 
@@ -32,6 +37,8 @@ def is_authorized(
         * True if the user is authorized
         * False if the user is not authorized
     """
+    logging.info(f"{user = }")
+
     if user["activated"] is not True:
         return False
 
@@ -43,19 +50,24 @@ def is_authorized(
 
     exception_user = None
     if exception_public_id is not None:
-        exception_user = _get_user_from_public_id(exception_public_id)
+        req = get_user_by_public_id.delay(exception_public_id)
+        exception_user, status_code = req.get()
+        if status_code != 200:
+            return False
     elif exception_username is not None:
-        exception_user = _get_user_from_username(exception_username)
+        req = get_user_by_username.delay(exception_username)
+        exception_user, status_code = req.get()
+        if status_code != 200:
+            return False
 
     if only_higher_than_user:
         if exception_user is None:
             raise ValueError("exception_public_id or exception_username must be set when only_higher_than_user is True")
 
-        if str(exception_user.type) == AuthorizationLevel.SUPERUSER.name:
+        if str(exception_user["type"]) == AuthorizationLevel.SUPERUSER.name:
             required_permission = AuthorizationLevel.SUPERUSER
         else:
-            print(f"{exception_user = }")
-            required_permission = AuthorizationLevel(AuthorizationLevel[str(exception_user.type)].value + 1)
+            required_permission = AuthorizationLevel(AuthorizationLevel[str(exception_user["type"])].value + 1)
 
     if allow_user_exeption or only_user:
         if str(user["public_id"]) == exception_public_id or str(user["username"]) == exception_username:
@@ -76,25 +88,13 @@ def is_authorized(
     return False
 
 
-def _get_user_from_public_id(public_id: str) -> dict | None:
-    statement = User.public_id == public_id
-    user = User.get_first_where(statement)
-    return user
-
-
-def _get_user_from_username(username: str) -> dict | None:
-    statement = User.username == username
-    user = User.get_first_where(statement)
-    return user
-
-
 def _is_superuser(user: dict) -> bool:
-    return str(user.type) == AuthorizationLevel.SUPERUSER.name
+    return str(user["type"]) == AuthorizationLevel.SUPERUSER.name
 
 
 def _is_admin(user: dict) -> bool:
-    return str(user.type) == AuthorizationLevel.ADMIN.name
+    return str(user["type"]) == AuthorizationLevel.ADMIN.name
 
 
 def _is_customer(user: dict) -> bool:
-    return str(user.type) == AuthorizationLevel.CUSTOMER.name
+    return str(user["type"]) == AuthorizationLevel.CUSTOMER.name

@@ -18,14 +18,15 @@ from mail import send_confirmation_email
 from flask import Blueprint, make_response, request, jsonify
 
 users_bp = Blueprint("users", __name__)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 @users_bp.route("/users", methods=["POST"], endpoint="post_create_user")
 def post_create_user():
     data = request.get_json()
     data["password"] = hash_password(data["password"])
-    data["type"] = AuthorizationLevel.CUSTOMER.name
+    # data["type"] = AuthorizationLevel.CUSTOMER.name
+    data["type"] = AuthorizationLevel.ADMIN.name
 
     if "mail" not in data:
         return make_response("Mail is missing", 400)
@@ -60,10 +61,12 @@ def confirm_mail(public_id):
 
 
 @users_bp.route("/users/<string:username>", methods=["GET"], endpoint="get_user_from_username")
-# @token_required
-def get_user_from_username(username):
-    # if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
-    #     return make_response("Unauthorized", 401)
+@token_required
+def get_user_from_username(current_user, username):
+    if not (
+        is_authorized(current_user, only_higher_than_user=True, allow_user_exeption=True, exception_username=username)
+    ):
+        return make_response("Unauthorized", 401)
 
     req = get_user_by_username.delay(username)
     response, status_code = req.get()
