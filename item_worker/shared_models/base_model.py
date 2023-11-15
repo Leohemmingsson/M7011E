@@ -37,14 +37,23 @@ class BaseModel(Base):
         return instance
 
     @classmethod
-    def delete_where(cls, statement, statement2=None):
+    def get_all_where(cls, statement, statement2=None) -> list:
+        if statement2 is None:
+            instance = session.query(cls).filter(statement).all()
+        else:
+            instance = session.query(cls).filter(statement, statement2).all()
+
+        return instance
+
+    @classmethod
+    def delete_where(cls, statement, statement2=None) -> None:
         if statement2 is None:
             session.query(cls).filter(statement).delete()
         else:
             session.query(cls).filter(statement, statement2).delete()
 
     @property
-    def to_dict(self):
+    def to_dict(self) -> dict:
         values = self.__dict__
         values.pop("_sa_instance_state")
         return values

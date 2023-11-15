@@ -148,6 +148,12 @@ def get_order_by_id(id):
     if order is None:
         return ("Order not found", 404)
 
+    statement = ItemGroup.order_id == id
+    # all_item_groups = ItemGroup.get_all_where(statement)
+    # all_items = []
+
+    # {"order": order.to_dict, "items": [one_item.to_dict for one_item in order.items]"}
+
     return (order.to_dict, 200)
 
 
