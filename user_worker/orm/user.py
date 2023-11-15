@@ -2,7 +2,7 @@
 from shared_models import BaseModel, session
 
 # pip
-from sqlalchemy import Column, String, Enum, Boolean, ForeignKey, Integer, delete
+from sqlalchemy import Column, String, Enum, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 
@@ -41,4 +41,3 @@ class User(BaseModel):
         session.delete(verification_info)
         session.delete(user)
         session.commit()
-
