@@ -11,7 +11,9 @@ from .item_tasks import (
     create_item,
     get_all_items,
     get_item_by_id,
+    get_item_by_name,
     delete_item_by_id,
+    delete_item_by_name,
 )
 
 
@@ -25,5 +27,7 @@ __all__ = [
     "create_item",
     "get_all_items",
     "get_item_by_id",
+    "get_item_by_name",
     "delete_item_by_id",
+    "delete_item_by_name",
 ]
