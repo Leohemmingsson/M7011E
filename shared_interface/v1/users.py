@@ -41,9 +41,9 @@ def post_create_user():
 
 @users_bp.route("/users", methods=["GET"], endpoint="route_get_all_users")
 @token_required
-def route_get_all_users():
-    # if not is_authorized(current_user, AuthorizationLevel.ADMIN):
-    #     return make_response("Unauthorized", 401)
+def route_get_all_users(current_user):
+    if not is_authorized(current_user, AuthorizationLevel.ADMIN):
+        return make_response("Unauthorized", 401)
 
     req = get_all_users.delay()
     all_users: list = req.get()

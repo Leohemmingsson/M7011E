@@ -1,32 +1,11 @@
-# std
-from typing import Protocol
-
 # own
 from .authorization_levels import AuthorizationLevel
 
 # from orm import User
 
 
-class User(Protocol):
-    @property
-    def activated(self) -> bool:
-        ...
-
-    @property
-    def username(self) -> str:
-        ...
-
-    @property
-    def public_id(self) -> str:
-        ...
-
-    @property
-    def type(self) -> AuthorizationLevel:
-        ...
-
-
 def is_authorized(
-    user: User,
+    user: dict,
     required_permission: AuthorizationLevel | None = None,
     only_higher_than_user: bool = False,
     only_user: bool = False,
@@ -53,7 +32,7 @@ def is_authorized(
         * True if the user is authorized
         * False if the user is not authorized
     """
-    if user.activated is not True:
+    if user["activated"] is not True:
         return False
 
     if _is_superuser(user):
@@ -79,7 +58,7 @@ def is_authorized(
             required_permission = AuthorizationLevel(AuthorizationLevel[str(exception_user.type)].value + 1)
 
     if allow_user_exeption or only_user:
-        if str(user.public_id) == exception_public_id or str(user.username) == exception_username:
+        if str(user["public_id"]) == exception_public_id or str(user["username"]) == exception_username:
             return True
         elif only_user:
             return False
@@ -97,7 +76,7 @@ def is_authorized(
     return False
 
 
-def _get_user_from_public_id(public_id: str) -> User | None:
+def _get_user_from_public_id(public_id: str) -> dict | None:
     statement = User.public_id == public_id
     user = User.get_first_where(statement)
     return user
