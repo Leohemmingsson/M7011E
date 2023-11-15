@@ -82,19 +82,19 @@ def _get_user_from_public_id(public_id: str) -> dict | None:
     return user
 
 
-def _get_user_from_username(username: str) -> User | None:
+def _get_user_from_username(username: str) -> dict | None:
     statement = User.username == username
     user = User.get_first_where(statement)
     return user
 
 
-def _is_superuser(user: User) -> bool:
+def _is_superuser(user: dict) -> bool:
     return str(user.type) == AuthorizationLevel.SUPERUSER.name
 
 
-def _is_admin(user: User) -> bool:
+def _is_admin(user: dict) -> bool:
     return str(user.type) == AuthorizationLevel.ADMIN.name
 
 
-def _is_customer(user: User) -> bool:
+def _is_customer(user: dict) -> bool:
     return str(user.type) == AuthorizationLevel.CUSTOMER.name

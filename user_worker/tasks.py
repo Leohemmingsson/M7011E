@@ -32,6 +32,7 @@ BaseModel.metadata.create_all(engine)
 
 @app.task(queue="user", name="create_user")
 def create_user(data: dict) -> tuple:
+    data = data
     data["public_id"] = str(uuid.uuid4())
     data["activated"] = False
     new_user = User.add(**data)
