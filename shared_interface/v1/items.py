@@ -1,6 +1,6 @@
 # own
-from orm import Item
 from permissions import token_required, is_authorized, AuthorizationLevel
+from task_worker.scheduler_creater import celery_obj
 
 # pip
 from flask import Blueprint, make_response, request, jsonify
@@ -9,18 +9,20 @@ items_bp = Blueprint("items", __name__)
 
 
 @items_bp.route("/items", methods=["POST"], endpoint="post_create_item")
-@token_required
+# @token_required
 def post_create_item():
-    data = request.get_json()
-    Item.add(**data)
+    # data = request.get_json()
+    # Item.add(**data)
+
+    celery_obj.send_task("item.create_item", kwargs={"name": "Bowl"})
     return make_response("Item created", 201)
 
 
 @items_bp.route("/items", methods=["GET"], endpoint="get_all_items")
-@token_required
+# @token_required
 def get_all_items():
-    items = Item.get_all()
-    items = [one_item.to_dict for one_item in items]
+    req = celery_obj.send_task("item.get_all_items")
+    items: list = req.get()
     return jsonify(items)
 
 

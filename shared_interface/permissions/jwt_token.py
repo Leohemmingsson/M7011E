@@ -3,10 +3,10 @@ from functools import wraps
 import os
 
 # own
-from orm import User
+from task_worker import get_user_by_public_id
 
 # pip
-from flask import request, jsonify, current_app
+from flask import request, jsonify, make_response
 import jwt
 
 
@@ -20,12 +20,14 @@ def token_required(func):
 
         try:
             data = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-            print(data)
-            db = current_app.db
-            current_user = db.session.query(User).where(User.public_id == data["public_id"]).first()
+            req = get_user_by_public_id.delay(data["public_id"])
+            response, status_code = req.get()
+            if status_code != 200:
+                return make_response(response, status_code)
+            current_user = response
         except Exception as e:
             print(f"[Warning] specify exception as {type(e)} in jwt_token.py")
-            return jsonify({"message": "Token is invalid"}, 401)
+            return make_response("Token is invalid", 401)
 
         return func(current_user, *args, **kwargs)
 

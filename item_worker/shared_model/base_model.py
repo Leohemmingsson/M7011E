@@ -1,35 +1,42 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import delete
+# pip
+from sqlalchemy import delete, create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+engine = create_engine("mysql://root:root@db:3306/main")
+
+# Create a session factory
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Declare a base class for declarative models
+Base = declarative_base()
 
 
-db = SQLAlchemy()
-
-
-class BaseModel(db.Model):
+class BaseModel(Base):
     __abstract__ = True
 
     @classmethod
     def add(cls, *args, **kwargs):
         instance = cls(*args, **kwargs)
-        db.session.add(instance)
-        db.session.commit()
+        session.add(instance)
+        session.commit()
         return instance
 
     @classmethod
     def get_all(cls) -> list:
-        instance = db.session.query(cls).all()
+        instance = session.query(cls).all()
         return instance
 
     @classmethod
     def get_first_where(cls, statement):
-        instance = db.session.query(cls).filter(statement).first()
+        instance = session.query(cls).filter(statement).first()
         return instance
 
     @classmethod
     def delete_where(cls, statement):
         delete_query = delete(cls).where(statement)
-        db.session.execute(delete_query)
-        db.session.commit()
+        session.execute(delete_query)
+        session.commit()
 
     @property
     def to_dict(self):
@@ -39,7 +46,7 @@ class BaseModel(db.Model):
 
     def update(self, key, value):
         setattr(self, key, value)
-        db.session.commit()
+        session.commit()
 
     def __repr__(self):
         repr_value = ""

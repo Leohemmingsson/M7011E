@@ -20,5 +20,4 @@ class User(BaseModel):
     activated = Column(Boolean)
 
     # relationships
-    orders = relationship("Order", back_populates="customer")
     address = relationship("Address", back_populates="users")

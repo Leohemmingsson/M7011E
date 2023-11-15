@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+
+  interface_app:
+    build: .
+    command: python main.py
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:5000"
+    depends_on:
+      - rabbit
+      - db
+
+  rabbit:
+    hostname: rabbit
+    image: "rabbitmq:3-management"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  db:
+    image: mysql:5.7.22
+    restart: always
+    environment:
+      MYSQL_DATABASE: celery
+      # MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - 33066:3306
