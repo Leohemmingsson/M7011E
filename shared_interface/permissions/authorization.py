@@ -2,13 +2,10 @@
 from .authorization_levels import AuthorizationLevel
 from task_worker import get_user_by_public_id, get_user_by_username
 
-<<<<<<< HEAD
-=======
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
->>>>>>> origin
 # from orm import User
 
 
@@ -40,11 +37,8 @@ def is_authorized(
         * True if the user is authorized
         * False if the user is not authorized
     """
-<<<<<<< HEAD
-=======
     logging.info(f"{user = }")
 
->>>>>>> origin
     if user["activated"] is not True:
         return False
 
@@ -94,25 +88,8 @@ def is_authorized(
     return False
 
 
-<<<<<<< HEAD
-def _get_user_from_public_id(public_id: str) -> dict | None:
-    statement = User.public_id == public_id
-    user = User.get_first_where(statement)
-    return user
-
-
-def _get_user_from_username(username: str) -> User | None:
-    statement = User.username == username
-    user = User.get_first_where(statement)
-    return user
-
-
-def _is_superuser(user: User) -> bool:
-    return str(user.type) == AuthorizationLevel.SUPERUSER.name
-=======
 def _is_superuser(user: dict) -> bool:
     return str(user["type"]) == AuthorizationLevel.SUPERUSER.name
->>>>>>> origin
 
 
 def _is_admin(user: dict) -> bool:
