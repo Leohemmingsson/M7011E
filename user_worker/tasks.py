@@ -153,8 +153,3 @@ def set_user_verification_attemts_zero(public_id):
 
     user_verification.update("attempts", 0)
     return ("Attempts is set to 0", 200)
-
-
-# fetcha user_verification
-# generate verification_code | attempts = 3, timestamp now
-#
