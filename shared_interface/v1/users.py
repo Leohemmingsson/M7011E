@@ -34,10 +34,7 @@ def post_create_user():
     req = create_user.delay(data)
 
     response, status_code = req.get()
-
-    # if status_code == 201:
-    # new_user = response
-    # send_confirmation_email(new_user)
+    # send_confirmation_email(response)
 
     return make_response(f"User created: {response}", status_code)
 
@@ -77,10 +74,12 @@ def get_user_from_username(current_user, username):
 
 
 @users_bp.route("/users/<string:username>", methods=["DELETE"], endpoint="remove_user_with_username")
-# @token_required
-def remove_user_with_username(username):
-    # if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
-    #     return make_response("Unauthorized", 401)
+@token_required
+def remove_user_with_username(current_user, username):
+    if not (
+        is_authorized(current_user, only_higher_than_user=True, allow_user_exeption=True, exception_username=username)
+    ):
+        return make_response("Unauthorized", 401)
 
     req = delete_user_by_username.delay(username)
     response, status_code = req.get()

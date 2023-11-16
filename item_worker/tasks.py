@@ -98,8 +98,8 @@ def delete_item_by_name(name):
 
 @app.task(queue="item", name="create_order")
 def create_order(customer_id: str):
-    Order.add(customer_id=customer_id, status="in_progress")
-    return ("Order created", 201)
+    new_order = Order.add(customer_id=customer_id, status="in_progress")
+    return (f"Order {new_order.id} created", 201)
 
 
 @app.task(queue="item", name="mark_order_done")
