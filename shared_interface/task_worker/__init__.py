@@ -5,6 +5,7 @@ from .user_tasks import (
     get_user_by_username,
     get_user_by_public_id,
     activate_user_by_public_id,
+    update_user_cloumns,
 )
 
 from .item_tasks import (
@@ -33,6 +34,7 @@ __all__ = [
     "get_user_by_username",
     "get_user_by_public_id",
     "activate_user_by_public_id",
+    "update_user_cloumns",
     "create_item",
     "get_all_items",
     "get_item_by_id",
