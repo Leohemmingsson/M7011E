@@ -1,6 +1,13 @@
 # own
 # from permissions import token_required, is_authorized, AuthorizationLevel
-from task_worker import get_all_items, create_item, delete_item_by_id, get_item_by_name, get_item_by_id
+from task_worker import (
+    get_all_items,
+    create_item,
+    delete_item_by_id,
+    get_item_by_name,
+    get_item_by_id,
+    update_item_fields,
+)
 
 
 # pip
@@ -45,17 +52,17 @@ def rout_get_item_by_id(id):
     return make_response(response, status_code)
 
 
-@items_bp.route("/items/<string:name>", methods=["GET"], endpoint="update_item_fields")
-# @token_required
-def update_item_fields(name):
-    # if not (is_authorized(current_user, AuthorizationLevel.ADMIN)):
-    #     return make_response("Unauthorized", 401)
-
-    raise NotImplementedError("Not implemented yet")
-
-
 @items_bp.route("/items/<int:id>", methods=["DELETE"], endpoint="route_delete_item_by_name")
 def route_delete_item_by_name(id):
     req = delete_item_by_id.delay(id)
     response, status_code = req.get()
+    return make_response(response, status_code)
+
+
+@items_bp.route("/items/<int:item_id>", methods=["PUT"], endpoint="route_update_item_fields")
+def route_update_item_fields(item_id):
+    data = request.get_json()
+    req = update_item_fields.delay(item_id, data)
+    response, status_code = req.get()
+
     return make_response(response, status_code)

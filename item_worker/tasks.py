@@ -23,6 +23,7 @@ app.conf.task_routes = {
     "scheduler.get_item_by_name": {"queue": "item"},
     "scheduler.delete_item_by_id": {"queue": "item"},
     "scheduler.delete_item_by_name": {"queue": "item"},
+    "scheduler.update_item_fields": {"queue": "item"},
     "scheduler.create_order": {"queue": "item"},
     "scheduler.mark_order_done": {"queue": "item"},
     "scheduler.add_item_to_order": {"queue": "item"},
@@ -133,6 +134,19 @@ def remove_item_from_order(order_id: int, item_id: int, quantity: int):
     else:
         ItemGroup.delete_where(statement, statement2)
         return ("Item removed from order", 200)
+
+
+@app.task(queue="item", name="update_item_fields")
+def update_item_fields(item_id, data):
+    statement = Item.id == item_id
+    item = Item.get_first_where(statement)
+    if item is None:
+        return ("Item not found", 404)
+
+    for key, value in data.items():
+        item.update(key, value)
+
+    return (f"Item updated: {item_id}", 200)
 
 
 @app.task(queue="item", name="get_all_orders")
