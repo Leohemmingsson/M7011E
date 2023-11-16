@@ -31,6 +31,11 @@ def delete_item_by_name(name):
     ...
 
 
+@celery_obj.task(queue="item", name="update_item_fields")
+def update_item_fields(item_id, data):
+    ...
+
+
 @celery_obj.task(queue="item", name="create_order")
 def create_order(public_id: str):
     ...
@@ -42,12 +47,12 @@ def mark_order_done(order_id: int):
 
 
 @celery_obj.task(queue="item", name="add_item_to_order")
-def add_item_to_order(order_id: int, item_id: int, quantity: int):
+def add_item_to_order(order_id: int, item_id: int, quantity: int = 1):
     ...
 
 
 @celery_obj.task(queue="item", name="remove_item_from_order")
-def remove_item_from_order(order_id: int, item_id: int, quantity: int):
+def remove_item_from_order(order_id: int, item_id: int, quantity: int = 1):
     ...
 
 

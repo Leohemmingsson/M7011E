@@ -1,5 +1,7 @@
 # std
 import uuid
+import random
+import datetime
 
 # own
 from orm import User, UserVerification
@@ -108,3 +110,46 @@ def update_user_cloumns(username: str, data) -> tuple:
 
     return (f"User updated: {username}", 200)
 
+
+@app.task(queue="user", name="create_user_verification")
+def create_user_verification(public_id: str) -> tuple:
+    statement = UserVerification.id == public_id
+    user_verification = UserVerification.get_first_where(statement)
+    if user_verification is None:
+        return ("Could not find user", 404)
+
+    new_code = str(random.randint(100000, 999999))
+    timestamp = datetime.datetime.utcnow()
+    attempts = 3
+    user_verification.update("code", new_code)
+    user_verification.update("timestamp", timestamp)
+    user_verification.update("attempts", attempts)
+
+    return (f"User verification created: {public_id}", 200)
+
+
+@app.task(queue="user", name="get_user_verification_by_public_id")
+def get_user_verification_by_public_id(public_id):
+    statement = UserVerification.id == public_id
+    user_verification = UserVerification.get_first_where(statement)
+    if user_verification is None:
+        return ("Could not find user", 404)
+
+    if int(user_verification.attempts) == 0:
+        return ("No attempts left", 400)
+
+    user_verification.update("attempts", user_verification.attempts - 1)
+
+    return (user_verification.to_dict, 200)
+
+
+@app.task(queue="user", name="set_user_verification_attemts_zero")
+def set_user_verification_attemts_zero(public_id):
+    statement = UserVerification.id == public_id
+    user_verification = UserVerification.get_first_where(statement)
+
+    if user_verification is None:
+        return ("Could not find user", 404)
+
+    user_verification.update("attempts", 0)
+    return ("Attempts is set to 0", 200)
