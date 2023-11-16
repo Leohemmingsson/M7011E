@@ -1,6 +1,6 @@
 # own
 # from permissions import token_required, is_authorized, AuthorizationLevel
-from task_worker import get_all_items, create_item, delete_item_by_name, get_item_by_name, get_item_by_id
+from task_worker import get_all_items, create_item, delete_item_by_id, get_item_by_name, get_item_by_id
 
 
 # pip
@@ -54,8 +54,8 @@ def update_item_fields(name):
     raise NotImplementedError("Not implemented yet")
 
 
-@items_bp.route("/items/<string:name>", methods=["DELETE"], endpoint="route_delete_item_by_name")
-def route_delete_item_by_name(name):
-    req = delete_item_by_name.delay(name)
+@items_bp.route("/items/<int:id>", methods=["DELETE"], endpoint="route_delete_item_by_name")
+def route_delete_item_by_name(id):
+    req = delete_item_by_id.delay(id)
     response, status_code = req.get()
     return make_response(response, status_code)

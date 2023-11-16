@@ -151,6 +151,8 @@ def get_order_by_id(id):
         return ("Order not found", 404)
 
     statement = ItemGroup.order_id == id
+    return (order.itemgroups, 200)
+
     # all_item_groups = ItemGroup.get_all_where(statement)
     # all_items = []
 

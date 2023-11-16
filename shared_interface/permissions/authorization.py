@@ -37,7 +37,7 @@ def is_authorized(
         * True if the user is authorized
         * False if the user is not authorized
     """
-    logging.info(f"{user = }")
+    # logging.info(f"{user = }")
 
     if user["activated"] is not True:
         return False

@@ -25,7 +25,7 @@ def post_create_order(current_user):
     return make_response(response, status_code)
 
 
-@orders_bp.route("/orders/<int:order_id>/done", methods=["POST"], endpoint="route_mark_order_done")
+@orders_bp.route("/orders/<int:order_id>/done", methods=["PATCH"], endpoint="route_mark_order_done")
 def route_mark_order_done(order_id: int):
     req = mark_order_done.delay(order_id)
     response, status_code = req.get()
@@ -33,7 +33,7 @@ def route_mark_order_done(order_id: int):
     return make_response(response, status_code)
 
 
-@orders_bp.route("/orders/<int:id>", methods=["GET"], endpoint="get_orders_from_id")
+@orders_bp.route("/orders/<int:order_id>", methods=["GET"], endpoint="get_orders_from_id")
 @token_required
 def get_orders_from_id(current_user, order_id):
     req = get_uid_on_order.delay(order_id)
@@ -44,7 +44,7 @@ def get_orders_from_id(current_user, order_id):
         )
     ):
         return make_response("Unauthorized", 401)
-    req = get_order_by_id.delay(id)
+    req = get_order_by_id.delay(order_id)
     response, status_code = req.get()
 
     return make_response(response, status_code)
