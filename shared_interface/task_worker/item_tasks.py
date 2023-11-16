@@ -47,12 +47,12 @@ def mark_order_done(order_id: int):
 
 
 @celery_obj.task(queue="item", name="add_item_to_order")
-def add_item_to_order(order_id: int, item_id: int, quantity: int):
+def add_item_to_order(order_id: int, item_id: int, quantity: int = 1):
     ...
 
 
 @celery_obj.task(queue="item", name="remove_item_from_order")
-def remove_item_from_order(order_id: int, item_id: int, quantity: int):
+def remove_item_from_order(order_id: int, item_id: int, quantity: int = 1):
     ...
 
 
