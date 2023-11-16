@@ -9,6 +9,7 @@ from task_worker import (
     delete_user_by_username,
     get_user_by_username,
     activate_user_by_public_id,
+    update_user_cloumns,
 )
 
 # from mail import send_confirmation_email
@@ -90,7 +91,16 @@ def remove_user_with_username(username):
 @users_bp.route("/users/<string:username>", methods=["PUT"], endpoint="update_user_fields")
 @token_required
 def update_user_fields(current_user, username):
-    if not (is_authorized(current_user, only_higher_than_user=True, exception_username=username)):
+    if not (
+        is_authorized(current_user, only_higher_than_user=True, allow_user_exeption=True, exception_username=username)
+    ):
         return make_response("Unauthorized", 401)
 
-    raise NotImplementedError("Not implemented yet")
+    data = request.get_json()
+    if "password" in data and data["password"]:
+        data["password"] = hash_password(data["password"])
+
+    req = update_user_cloumns.delay(username, data)
+    response, status_code = req.get()
+
+    return make_response(response, status_code)

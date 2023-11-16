@@ -15,6 +15,7 @@ celery_obj.conf.task_routes = {
     "scheduler.get_user_by_public_id": {"queue": "user"},
     "scheduler.activate_user_by_public_id": {"queue": "user"},
     "scheduler.delete_user_by_username": {"queue": "user"},
+    "scheduler.update_user_cloumns": {"queue": "user"},
     "scheduler.create_item": {"queue": "item"},
     "scheduler.get_all_items": {"queue": "item"},
     "scheduler.get_item_by_id": {"queue": "item"},
