@@ -12,7 +12,7 @@ orders_bp = Blueprint("orders", __name__)
 @orders_bp.route("/orders", methods=["POST"], endpoint="post_create_order")
 @token_required
 def post_create_order(current_user):
-    req = create_order.delay(current_user.public_id)
+    req = create_order.delay(current_user["public_id"])
     response, status_code = req.get()
 
     return make_response(response, status_code)

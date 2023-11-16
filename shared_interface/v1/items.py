@@ -36,10 +36,10 @@ def get_items_from_name(name):
     return make_response(response, status_code)
 
 
-@items_bp.route("/items/<string:name>", methods=["GET"], endpoint="get_item_by_id")
+@items_bp.route("/items/<int:id>", methods=["GET"], endpoint="get_item_by_id")
 # @token_required
-def get_item_by_id(name):
-    req = get_item_by_id.delay(name)
+def get_item_by_id(id):
+    req = get_item_by_id.delay(id)
     response, status_code = req.get()
 
     return make_response(response, status_code)
