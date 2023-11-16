@@ -22,6 +22,7 @@ def post_create_item():
 @items_bp.route("/items", methods=["GET"], endpoint="route_get_all_items")
 # @token_required
 def route_get_all_items():
+    #debug route 
     req = get_all_items.delay()
     resonse, status_code = req.get()
     return make_response(resonse, status_code)

@@ -107,3 +107,4 @@ def update_user_cloumns(username: str, data) -> tuple:
         user.update(key, value)
 
     return (f"User updated: {username}", 200)
+
