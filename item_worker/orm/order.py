@@ -11,7 +11,7 @@ class Order(BaseModel):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     customer_id = Column(String(255), nullable=False)
-    status = Column(Enum("in_progess", "done"))
+    status = Column(Enum("in_progress", "done"))
 
     # relationships
     itemgroups = relationship("ItemGroup", back_populates="order")

@@ -1,7 +1,14 @@
 # own
 from permissions import token_required, is_authorized, AuthorizationLevel as AL
 
-from task_worker import create_order, get_all_orders, get_order_by_id, get_orders_by_customer_id, get_uid_on_order
+from task_worker import (
+    create_order,
+    get_all_orders,
+    get_order_by_id,
+    get_orders_by_customer_id,
+    get_uid_on_order,
+    mark_order_done,
+)
 
 # pip
 from flask import Blueprint, make_response
@@ -13,6 +20,14 @@ orders_bp = Blueprint("orders", __name__)
 @token_required
 def post_create_order(current_user):
     req = create_order.delay(current_user["public_id"])
+    response, status_code = req.get()
+
+    return make_response(response, status_code)
+
+
+@orders_bp.route("/orders/<int:order_id>/done", methods=["POST"], endpoint="route_mark_order_done")
+def route_mark_order_done(order_id: int):
+    req = mark_order_done.delay(order_id)
     response, status_code = req.get()
 
     return make_response(response, status_code)

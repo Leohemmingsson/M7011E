@@ -1,6 +1,6 @@
 # own
 # from permissions import token_required, is_authorized, AuthorizationLevel
-from task_worker import get_all_items, create_item, delete_item_by_name, get_item_by_name
+from task_worker import get_all_items, create_item, delete_item_by_name, get_item_by_name, get_item_by_id
 
 
 # pip
@@ -36,9 +36,9 @@ def get_items_from_name(name):
     return make_response(response, status_code)
 
 
-@items_bp.route("/items/<int:id>", methods=["GET"], endpoint="get_item_by_id")
+@items_bp.route("/items/<int:id>", methods=["GET"], endpoint="route_get_item_by_id")
 # @token_required
-def get_item_by_id(id):
+def rout_get_item_by_id(id):
     req = get_item_by_id.delay(id)
     response, status_code = req.get()
 
