@@ -12,7 +12,7 @@ from task_worker import (
     update_user_cloumns,
 )
 
-# from mail import send_confirmation_email
+from mail import send_confirmation_email
 
 
 # pip
@@ -34,7 +34,10 @@ def post_create_user():
     req = create_user.delay(data)
 
     response, status_code = req.get()
-    # send_confirmation_email(response)
+
+    if status_code == 201:
+        new_user = response
+        send_confirmation_email(new_user)
 
     return make_response(f"User created: {response}", status_code)
 
