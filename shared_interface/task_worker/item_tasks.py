@@ -31,6 +31,11 @@ def delete_item_by_name(name):
     ...
 
 
+@celery_obj.task(queue="item", name="update_item_fields")
+def update_item_fields(item_id, data):
+    ...
+
+
 @celery_obj.task(queue="item", name="create_order")
 def create_order(public_id: str):
     ...
