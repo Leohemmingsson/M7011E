@@ -1,5 +1,6 @@
 # std
 import datetime
+import logging
 
 # own
 from permissions import check_password_hash
@@ -16,6 +17,9 @@ from flask import Blueprint, request, make_response, jsonify
 import jwt
 
 authentication_pb = Blueprint("authentication", __name__)
+
+logging.basicConfig(level=logging.INFO)
+
 
 # NEED TO BE MOVED IN PRODUCTION
 SECRET_KEY = "thisissecretkey"
@@ -43,6 +47,7 @@ def login():
     if not check_password_hash(auth.password, user["password"]):
         return make_response("Could not verify", 401, {"WWW-Authenticate": 'Basic realm="Login required!"'})
 
+    logging.info(user["public_id"])
     req = create_user_verification.delay(user["public_id"])
     user_verification_code, status_code = req.get()
 
@@ -71,6 +76,7 @@ def verify():
 
     req = get_user_verification_by_public_id.delay(user["public_id"])
     user_verification_info, status_code = req.get()
+    logging.info(user_verification_info)
 
     if status_code != 200:
         return make_response("Could not verify", 401)

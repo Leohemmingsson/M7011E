@@ -113,7 +113,7 @@ def update_user_cloumns(username: str, data) -> tuple:
 
 @app.task(queue="user", name="create_user_verification")
 def create_user_verification(public_id: str) -> tuple:
-    statement = UserVerification.id == public_id
+    statement = UserVerification.user_public_id == public_id
     user_verification = UserVerification.get_first_where(statement)
     if user_verification is None:
         return ("Could not find user", 404)
@@ -125,12 +125,12 @@ def create_user_verification(public_id: str) -> tuple:
     user_verification.update("timestamp", timestamp)
     user_verification.update("attempts", attempts)
 
-    return (f"User verification created: {public_id}", 200)
+    return (new_code, 200)
 
 
 @app.task(queue="user", name="get_user_verification_by_public_id")
 def get_user_verification_by_public_id(public_id):
-    statement = UserVerification.id == public_id
+    statement = UserVerification.user_public_id == public_id
     user_verification = UserVerification.get_first_where(statement)
     if user_verification is None:
         return ("Could not find user", 404)
@@ -140,12 +140,14 @@ def get_user_verification_by_public_id(public_id):
 
     user_verification.update("attempts", user_verification.attempts - 1)
 
+    user_verification.code
+
     return (user_verification.to_dict, 200)
 
 
 @app.task(queue="user", name="set_user_verification_attemts_zero")
 def set_user_verification_attemts_zero(public_id):
-    statement = UserVerification.id == public_id
+    statement = UserVerification.user_public_id == public_id
     user_verification = UserVerification.get_first_where(statement)
 
     if user_verification is None:
