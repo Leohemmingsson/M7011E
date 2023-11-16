@@ -29,3 +29,8 @@ def activate_user_by_public_id(public_id) -> tuple:
 @celery_obj.task(queue="user", name="delete_user_by_username")
 def delete_user_by_username(username: str) -> tuple:
     ...
+
+
+@celery_obj.task(queue="user", name="update_user_cloumns")
+def update_user_cloumns(username: str, data: dict) -> tuple:
+    ...
