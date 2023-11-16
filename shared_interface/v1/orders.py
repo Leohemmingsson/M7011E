@@ -38,6 +38,8 @@ def get_orders_from_id(current_user, order_id):
 @orders_bp.route("/orders", methods=["GET"], endpoint="route_get_all_orders")
 @token_required
 def route_get_all_orders(current_user):
+    if not (is_authorized(required_permission=AL.ADMIN, user=current_user)):
+        return make_response("Unauthorized", 401)
     req = get_all_orders.delay()
     response, status_code = req.get()
 
