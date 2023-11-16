@@ -30,6 +30,8 @@ app.conf.task_routes = {
     "scheduler.get_all_orders": {"queue": "item"},
     "scheduler.get_order_by_id": {"queue": "item"},
     "scheduler.delete_order_by_id": {"queue": "item"},
+    "scheduler.get_orders_by_customer_id": {"queue": "item"},
+    "scheduler.get_uid_on_order": {"queue": "item"},
 }
 
 
@@ -94,8 +96,8 @@ def delete_item_by_name(name):
 
 
 @app.task(queue="item", name="create_order")
-def create_order(data: dict):
-    Order.add(**data)
+def create_order(customer_id: str):
+    Order.add(customer_id=customer_id, status="in_progress")
     return ("Order created", 201)
 
 
@@ -162,3 +164,23 @@ def delete_order_by_id(id):
     statement = Order.id == id
     Order.delete_where(statement)
     return ("Order deleted", 200)
+
+
+@app.task(queue="item", name="get_orders_by_customer_id")
+def get_orders_by_customer_id(id):
+    statement = Order.customer_id == id
+    orders = Order.get_all_where(statement)
+    if orders is None:
+        return ("Order not found", 404)
+
+    return ([one_order.to_dict for one_order in orders], 200)
+
+
+@app.task(queue="item", name="get_uid_on_order")
+def get_uid_on_order(order_id):
+    statement = Order.id == order_id
+    order = Order.get_first_where(statement)
+    if order is None:
+        return ("Order not found", 404)
+
+    return (order.customer_id, 200)

@@ -32,7 +32,7 @@ def delete_item_by_name(name):
 
 
 @celery_obj.task(queue="item", name="create_order")
-def create_order(data: dict):
+def create_order(public_id: str):
     ...
 
 
@@ -63,4 +63,14 @@ def get_order_by_id(id):
 
 @celery_obj.task(queue="item", name="delete_order_by_id")
 def delete_order_by_id(id):
+    ...
+
+
+@celery_obj.task(queue="item", name="get_orders_by_customer_id")
+def get_orders_by_customer_id(customer_id):
+    ...
+
+
+@celery_obj.task(queue="item", name="get_uid_on_order")
+def get_uid_on_order(order_id):
     ...

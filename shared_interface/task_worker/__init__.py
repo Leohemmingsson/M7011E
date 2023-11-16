@@ -21,6 +21,8 @@ from .item_tasks import (
     get_all_orders,
     get_order_by_id,
     delete_order_by_id,
+    get_orders_by_customer_id,
+    get_uid_on_order,
 )
 
 
@@ -44,4 +46,6 @@ __all__ = [
     "get_all_orders",
     "get_order_by_id",
     "delete_order_by_id",
+    "get_orders_by_customer_id",
+    "get_uid_on_order",
 ]
