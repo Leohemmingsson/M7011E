@@ -113,14 +113,20 @@ def mark_order_done(order_id: int):
 
 
 @app.task(queue="item", name="add_item_to_order")
-def add_item_to_order(order_id: int, item_id: int, quantity: int):
+def add_item_to_order(order_id: int, item_id: int, quantity: int = 1):
     arguments = {"order_id": order_id, "item_id": item_id, "quantity": quantity}
+    statement = ItemGroup.order_id == order_id
+    statement2 = ItemGroup.item_id == item_id
+    item_group = ItemGroup.get_first_where(statement, statement2)
+    if item_group is not None:
+        item_group.update("quantity", int(item_group.quantity) + quantity)
+        return ("Item quantity updated", 200)
     ItemGroup.add(**arguments)
     return ("Item added to order", 200)
 
 
 @app.task(queue="item", name="remove_item_from_order")
-def remove_item_from_order(order_id: int, item_id: int, quantity: int):
+def remove_item_from_order(order_id: int, item_id: int, quantity: int = 1):
     statement = ItemGroup.order_id == order_id
     statement2 = ItemGroup.item_id == item_id
     item_group = ItemGroup.get_first_where(statement, statement2)
@@ -151,14 +157,13 @@ def get_order_by_id(id):
         return ("Order not found", 404)
 
     statement = ItemGroup.order_id == id
-    return (order.itemgroups, 200)
+    item_groups = order.itemgroups
+    items = [(one_item_group.item.name, one_item_group.quantity) for one_item_group in item_groups]
+    order = order.to_dict
+    order["items"] = items
+    order.pop("itemgroups")
 
-    # all_item_groups = ItemGroup.get_all_where(statement)
-    # all_items = []
-
-    # {"order": order.to_dict, "items": [one_item.to_dict for one_item in order.items]"}
-
-    return (order.to_dict, 200)
+    return (order, 200)
 
 
 @app.task(queue="item", name="delete_order_by_id")

@@ -8,10 +8,12 @@ from task_worker import (
     get_orders_by_customer_id,
     get_uid_on_order,
     mark_order_done,
+    add_item_to_order,
+    remove_item_from_order,
 )
 
 # pip
-from flask import Blueprint, make_response
+from flask import Blueprint, make_response, request
 
 orders_bp = Blueprint("orders", __name__)
 
@@ -45,6 +47,40 @@ def get_orders_from_id(current_user, order_id):
     ):
         return make_response("Unauthorized", 401)
     req = get_order_by_id.delay(order_id)
+    response, status_code = req.get()
+
+    return make_response(response, status_code)
+
+
+@orders_bp.route("/orders/<int:order_id>/add_item", methods=["POST"], endpoint="route_add_item_to_order")
+def route_add_item_to_order(order_id: int):
+    """
+    Body:
+    {
+        "item_id": int,
+        "quantity": int
+    }
+    """
+    data = request.get_json()
+    data["order_id"] = order_id
+    req = add_item_to_order.delay(**data)
+    response, status_code = req.get()
+
+    return make_response(response, status_code)
+
+
+@orders_bp.route("/orders/<int:order_id>/remove_item", methods=["DELETE"], endpoint="route_remove_item_from_order")
+def route_remove_item_from_order(order_id: int):
+    """
+    Body:
+    {
+        "item_id": int,
+        "quantity": int
+    }
+    """
+    data = request.get_json()
+    data["order_id"] = order_id
+    req = remove_item_from_order.delay(**data)
     response, status_code = req.get()
 
     return make_response(response, status_code)
