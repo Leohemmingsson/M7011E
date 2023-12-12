@@ -2,29 +2,24 @@
 
 
 ## Setup
-Recommended is to use a [virtaulenv](https://virtualenv.pypa.io/en/latest/).
+Pull the repository to your machine. 
 
-To install all dependencies: (in terminal)
-```bash
-pip install -r requirements
-```
-
-### Errors
-
-**Exception: Can not find valid pkg-config name.  Specify MYSQLCLIENT_CFLAGS and MYSQLCLIENT_LDFLAGS env vars manually**
-
-This can (in Ubuntu 22.04.3 LTS) be fixed by writing the following command:
-```bash
-sudo apt-get install libmysqlclient-dev
-```
+Make sure that you have docker installed. 
 
 ## Run the project
-To run the project either write: (in terminal)
-```bash
-python main.py
-```
-Or if [code runner](https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner) is installed, just press `Ctrl + Alt + k`
 
+Open up total of three terminals. Locate to one of  the shared_interface, item_worker and user_worker folder in each of the terminals. 
+
+Run the following command inside of each map. Start with the shared_interface. 
+```
+docker compose up -d --build 
+```
+
+Wait untill the workers are connected. 
+
+Congratulations! <br>
+
+Now you can use Postman to send requests to access all of the functionality.
 
 ## Coding best practices
 This project uses flake8 (PEP8), with black formatter. Best way to integrate this is to install the extensions:
