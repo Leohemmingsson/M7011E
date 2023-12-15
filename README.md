@@ -6,6 +6,15 @@ Pull the repository to your machine.
 
 Make sure that you have docker installed. 
 
+Add a .env file with:
+SECRET_KEY="<your secret key>"
+
+MAIL_USERNAME="<your mail>"
+MAIL_PASSWORD="<your app password>"
+
+Setting up an app password:
+![alt text]([http://url/to/img.png](https://cdn.discordapp.com/attachments/1169228328746614859/1172476583907434556/image.png?ex=658e9969&is=657c2469&hm=a52709fd10e3b2f70667c228256b37982c110f532e08708c783e5989c551d17e&))
+
 ## Run the project
 
 Open up total of three terminals. Locate to one of  the shared_interface, item_worker and user_worker folder in each of the terminals. 
